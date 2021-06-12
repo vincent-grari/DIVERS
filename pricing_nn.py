@@ -1,9 +1,10 @@
-import torch 
-import torch.nn as nn 
-import torch.nn.functional as F 
 from tqdm import tqdm 
 from sklearn.utils import shuffle
 import numpy as np
+import torch 
+import torch.nn as nn 
+import torch.nn.functional as F 
+from torch.autograd import Variable
 
 class Pricing_NN(torch.nn.Module): 
 
