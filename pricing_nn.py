@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F 
 from tqdm import tqdm 
 from sklearn.utils import shuffle
+import numpy as np
 
 class Pricing_NN(torch.nn.Module): 
 
