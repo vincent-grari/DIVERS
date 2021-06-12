@@ -26,7 +26,7 @@ class Pricing_NN(torch.nn.Module):
         ##### PREDICTOR H #####
         model_h = NN_POISS()
         #criterion = nn.PoissonNLLLoss()
-        criterion = Poisson_Loss
+        criterion = self.Poisson_Loss
         #, eps=1e-8) #torch.nn.MSELoss() #reduction='mean'
         optimizer_h = torch.optim.Adam(model_h.parameters(), lr=self.lr)
         model_h.to(self.device)
