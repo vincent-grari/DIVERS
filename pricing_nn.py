@@ -52,7 +52,7 @@ class Pricing_NN(torch.nn.Module):
     def fit(self, X_train, y_train, G_train, E_train): 
         batch_no = len(X_train) // self.batch_size
         ##### PREDICTOR H #####
-        self.model_h=NN_POISS()
+        #self.model_h=NN_POISS()
         #criterion = nn.PoissonNLLLoss()
         criterion = self.Poisson_Loss
         #, eps=1e-8) #torch.nn.MSELoss() #reduction='mean'
@@ -60,7 +60,7 @@ class Pricing_NN(torch.nn.Module):
         self.model_h.to(self.device)
 
         ##### PREDICTOR G #####
-        self.model_g=NN_G()
+        #self.model_g=NN_G()
         #criterion = torch.nn.MSELoss() #reduction='mean'
         optimizer_g = torch.optim.Adam(self.model_g.parameters(), lr=self.lr)
         self.model_g.to(self.device)
