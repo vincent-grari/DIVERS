@@ -101,4 +101,4 @@ class Pricing_NN(torch.nn.Module):
         yhat = self.predict(X_train, G_train, E_train).cpu().data.numpy()
         #print(yhat.shape)
         #print(y_train.shape)
-        return yhat#print('DONE')
+        return print('DONE')
