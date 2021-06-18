@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 class Pricing_NN(torch.nn.Module): 
 
-    def __init__(self,mod_h,mod_g,lr,batch_size,p_device,nbepoch): 
+    def __init__(self,regressor, mod_h,mod_g,lr,batch_size,p_device,nbepoch): 
         super().__init__()
         self.lr = lr
         self.batch_size = int(batch_size)
@@ -21,6 +21,13 @@ class Pricing_NN(torch.nn.Module):
         self.nbepoch = int(nbepoch)
         self.model_h = mod_h()
         self.model_g = mod_g()
+        if regressor == 'poisson': 
+          # Use Adam to fit the model 
+          self.criterion = self.Poisson_Loss
+        elif regressor == 'gamma': 
+          self.criterion = self.Gamma_Loss
+        else: 
+          print('Le regressor est mal renseigné: ("poisson" ou "gamma")')
     def forward(self, x): 
         out = self.linear(x) 
         return out 
@@ -41,7 +48,12 @@ class Pricing_NN(torch.nn.Module):
       #loss=torch.mean(torch.exp(xbeta)-y*xbeta)
       loss=torch.mean(yhat-y*torch.log(yhat))
       return loss
-
+    
+    def Gamma_Loss(self,yhat, y):
+      #loss = torch.mean(yhat+(y-torch.log(yhat))/torch.log(yhat))
+      loss = torch.mean(torch.log(yhat)+(y-yhat)/yhat)
+      return loss  
+    
     def EDR_POIS(self, yhat, y):
     #loss=torch.mean(torch.exp(xbeta)-y*xbeta)
     #loss=torch.mean(yhat-y*torch.log(yhat))
@@ -54,7 +66,8 @@ class Pricing_NN(torch.nn.Module):
         ##### PREDICTOR H #####
         #self.model_h=NN_POISS()
         #criterion = nn.PoissonNLLLoss()
-        criterion = self.Poisson_Loss
+ 
+        #criterion = self.Poisson_Loss
         #, eps=1e-8) #torch.nn.MSELoss() #reduction='mean'
         optimizer_h = torch.optim.Adam(self.model_h.parameters(), lr=self.lr)
         self.model_h.to(self.device)
@@ -83,7 +96,7 @@ class Pricing_NN(torch.nn.Module):
                   #ypred_var=  model_h(x_var,e_var)
                   #loss = F.poisson_nll_loss(ypred_var, y_var, reduction='none') 
                   #loss = torch.mean(loss)
-                  loss = criterion(ypred_var, y_var)
+                  loss = self.criterion(ypred_var, y_var)
                   loss.backward()
                   optimizer_g.step()
                   #print('epoch :',epoch,'loss', loss)
@@ -94,7 +107,7 @@ class Pricing_NN(torch.nn.Module):
                 #ypred_var= model_h(x_var,e_var)
                 #loss = F.poisson_nll_loss(ypred_var, y_var, reduction='none') 
                 #loss = torch.mean(loss)
-                loss = criterion(ypred_var, y_var)
+                loss = self.criterion(ypred_var, y_var)
                 loss.backward()
                 optimizer_h.step()  
                 #print(loss)   
