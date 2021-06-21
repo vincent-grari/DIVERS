@@ -51,7 +51,7 @@ class Pricing_NN(torch.nn.Module):
     
     def Gamma_Loss(self,yhat, y):
       #loss = torch.mean(yhat+(y-torch.log(yhat))/torch.log(yhat))
-      loss = torch.mean(torch.log(yhat)+(y-yhat)/yhat)
+      loss = torch.mean(-torch.log(y/yhat)+(y-yhat)/yhat)
       return loss  
     
     def EDR_POIS(self, yhat, y):
